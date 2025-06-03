@@ -1,0 +1,29 @@
+name: "Set up one time action"
+description: "Set Node js and cache the node modules"
+inputs:
+  node-version:
+    description: "Node Js Version"
+    required: false
+    default: "22"
+runs:
+  using: composite
+  steps:
+    - name: Install Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{inputs.node-version}}
+    - name: Check node version
+      run: |
+        node -v
+        npm -v
+      shell: bash
+    - name: Cache node module
+      id: cache
+      uses: actions/cache@v4
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+    - name: Do npm install
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: npm install
+      shell: bash

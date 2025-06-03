@@ -1,0 +1,64 @@
+name: Learning Hub Actions
+#on: [push, workflow_dispatch]
+on:
+  push:
+    branches:
+      - main
+      - stage
+    paths-ignore:
+      - README.md
+      - './.github/workflows/**'
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: First Run
+        run: echo "Started"
+      - name: Code Checkout
+        uses: actions/checkout@v4
+#        run: |
+#          echo "Second Run Start ${{toJson(github)}}"
+#          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git learninghub_project
+#          cd learninghub_project && ls
+      - name: Getting From Actions folder (Setup Node and do Npm Install)
+        uses: ./.github/actions/setupnode
+        with:
+          node-version: '20'
+      - name: Run Tests
+        run: npm run test
+      - name: All Done
+        run: echo "Test Success"
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v4
+      - name: Getting From Actions folder (Setup Node and do Npm Install)
+        uses: ./.github/actions/setupnode
+      - name: Run Build
+        run: npm run build
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-files
+          path: build
+      - name: All Done
+        run: echo "Build Success"
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-files
+          path: build
+      - name: Deployment Dist
+        run: |
+          echo "Deployment Done"
+          ls build
+          echo "Deployment Completed"
+
+    

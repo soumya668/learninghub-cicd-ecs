@@ -1,0 +1,49 @@
+name: "Elearning Auth Production"
+services:
+  auth:
+    image: "auth-api"
+    container_name: "elearning_auth"
+    # depends_on:
+    #   - mongodb
+    build:
+      context: ./elearning-auth
+      dockerfile: Dockerfile.prod
+    ports:
+      - "2000:2000"
+    volumes:
+      - elearning_auth:/app/uploads
+    networks:
+      #- db-net
+      - server-net
+    env_file:
+      - ./env/server.prod.env
+  # mongodb:
+  #   image: "mongo:8.0.3"
+  #   container_name: "elearning_mongodb"
+  #   volumes:
+  #     - elearning_auth_db:/data/db
+  #   networks:
+  #     - db-net
+  #   env_file:
+  #     - ./env/mongo.env
+  elearning:
+    image: "learning-frontend"
+    container_name: "learning_frontend"
+    depends_on:
+      - auth
+    build:
+      context: ./learninghub
+      dockerfile: Dockerfile.prod
+      args:
+        REACT_APP_API_URL: http://localhost:2000
+    ports:
+      - "80:80"
+    networks:
+      - server-net
+
+volumes:
+  elearning_auth:
+  elearning_auth_db:
+networks:
+ # db-net:
+  server-net:
