@@ -49,6 +49,7 @@ jobs:
           context: ./elearning-auth
           file: ./elearning-auth/Dockerfile.prod
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
 
   build-image-react:
@@ -86,6 +87,7 @@ jobs:
           context: ./learninghub
           file: ./learninghub/Dockerfile.prod
           push: true
+          platforms: linux/amd64,linux/arm64
           build-args: |
             REACT_APP_API_URL=http://ecselearninglbv2-638976939.us-east-1.elb.amazonaws.com/api
           tags: ${{ steps.meta.outputs.tags }}
