@@ -49,7 +49,7 @@ app.get('/', cors(), (req, res) => {
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Origin, Referer, User-Agent');
 
   res.json({
-    message: 'Welcome to the E-Learning Auth API New ECS',
+    message: 'Welcome to the E-Learning Auth API New ECS - CI/CD',
     endpoints: {
       users: '/api/users'
     }
