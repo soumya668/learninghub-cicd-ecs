@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 
 // MongoDB connection string
 // In a production environment, this should be stored in environment variables
-const MONGO_URI = 'mongodb://localhost:27017/elearning';
+const MONGO_URI = process.env.MONGO_URI ||
+  'mongodb://localhost:27017/elearning'; // Default to local MongoDB instance
 //'mongodb://localhost:27017/elearning';
 //'mongodb://host.docker.internal:6000/elearning';
 //'mongodb://mongodb-net:27017/elearning;
