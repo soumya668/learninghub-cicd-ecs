@@ -25,7 +25,8 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{vars.DOCKER_USER_NAME}}/${{env.NODE_DOCKER_IMAGE}}
-          platforms: linux/arm64
+          push: true
+          platforms: linux/amd64,linux/arm64
           tags: |
             latest
             v1.0.${{ github.run_number }}
@@ -38,6 +39,9 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+        with:
+          install: true
+          driver-opts: network=host
 
       - name: Build and push Node.js Docker image
         uses: docker/build-push-action@v6
@@ -58,7 +62,8 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{vars.DOCKER_USER_NAME}}/${{env.REACT_DOCKER_IMAGE}}
-          platforms: linux/arm64
+          push: true
+          platforms: linux/amd64,linux/arm64
           tags: |
             latest
             v1.0.${{ github.run_number }}
@@ -71,6 +76,9 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+        with:
+          install: true
+          driver-opts: network=host
 
       - name: Build and push React.js Docker image
         uses: docker/build-push-action@v6
