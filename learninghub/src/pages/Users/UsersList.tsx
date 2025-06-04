@@ -59,7 +59,7 @@ const UsersList: React.FC = () => {
                     color="primary" 
                     size="small"
                   >
-                    View Details
+                    View User Details
                   </Button>
                 </TableCell>
               </TableRow>
