@@ -4,6 +4,7 @@ on:
     branches:
       - main
   workflow_dispatch:
+
 env:
   NODE_DOCKER_IMAGE: elearning-auth-repo
   REACT_DOCKER_IMAGE: elearning-react-app
@@ -13,6 +14,7 @@ env:
   REACT_CONTAINER_NAME: elearning_react_app
   ECS_CLUSTER_NAME: ECS_Elearning_Cluster
   ECS_SERVICE_NAME: ECS_Elearning_Task_Definition_Family-service-j1md2ism
+
 jobs:
   build-image-node:
     runs-on: ubuntu-latest
@@ -24,7 +26,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{vars.DOCKER_USER_NAME}}/${{env.NODE_DOCKER_IMAGE}}
+          images: ${{ vars.DOCKER_USER_NAME }}/${{ env.NODE_DOCKER_IMAGE }}
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
@@ -43,7 +45,7 @@ jobs:
           install: true
           driver-opts: network=host
 
-      - name: Build and push Node.js Docker image
+      - name: Build and push Node.js Docker image with cache
         uses: docker/build-push-action@v6
         with:
           context: ./elearning-auth
@@ -51,6 +53,8 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   build-image-react:
     runs-on: ubuntu-latest
@@ -62,7 +66,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{vars.DOCKER_USER_NAME}}/${{env.REACT_DOCKER_IMAGE}}
+          images: ${{ vars.DOCKER_USER_NAME }}/${{ env.REACT_DOCKER_IMAGE }}
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
@@ -81,7 +85,7 @@ jobs:
           install: true
           driver-opts: network=host
 
-      - name: Build and push React.js Docker image
+      - name: Build and push React.js Docker image with cache
         uses: docker/build-push-action@v6
         with:
           context: ./learninghub
@@ -91,6 +95,8 @@ jobs:
           build-args: |
             REACT_APP_API_URL=http://ecselearninglbv2-638976939.us-east-1.elb.amazonaws.com/api
           tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   deploy-to-ecs:
     runs-on: ubuntu-latest
@@ -104,7 +110,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{env.AWS_REGION}}
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Render Amazon ECS task definition for Node.js
         id: render-node-container
@@ -113,7 +119,7 @@ jobs:
           task-definition-family: ${{ env.TASK_DEFINITION_FAMILY }}
           container-name: ${{ env.NODE_CONTAINER_NAME }}
           image: ${{ vars.DOCKER_USER_NAME }}/${{ env.NODE_DOCKER_IMAGE }}
-      
+
       - name: Render Amazon ECS task definition for React
         id: render-react-container
         uses: aws-actions/amazon-ecs-render-task-definition@v1
@@ -128,3 +134,4 @@ jobs:
           task-definition: ${{ steps.render-react-container.outputs.task-definition }}
           service: ${{ env.ECS_SERVICE_NAME }}
           cluster: ${{ env.ECS_CLUSTER_NAME }}
+          wait-for-service-stability: true
