@@ -25,7 +25,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{vars.DOCKER_USER_NAME}}/${{env.NODE_DOCKER_IMAGE}}
-          platforms: linux/amd64
+          platforms: linux/arm64
           tags: |
             latest
             v1.0.${{ github.run_number }}
@@ -58,7 +58,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{vars.DOCKER_USER_NAME}}/${{env.REACT_DOCKER_IMAGE}}
-          platforms: linux/amd64
+          platforms: linux/arm64
           tags: |
             latest
             v1.0.${{ github.run_number }}
